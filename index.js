@@ -87,6 +87,26 @@ const run = async () => {
       res.json({ message: "success", result });
     });
     /* ------------Add a service end---------- */
+
+    /* -----------Get all the services---------- */
+
+    app.get("/services", async (req, res) => {
+      const size = parseInt(req.query.size);
+      const page = parseInt(req.query.page);
+
+      const query = {};
+      const cursor = serviceCollection.find(query);
+
+      //pagination if query exist
+      const result = await cursor
+        .skip(size * page)
+        .limit(size)
+        .toArray();
+      const dataCount = await serviceCollection.estimatedDocumentCount();
+
+      res.json({ dataCount, result });
+    });
+    /* -----------Get all the services end---------- */
   } catch {}
 };
 
