@@ -18,14 +18,15 @@ app.use(express.json());
 /* --------Middleware end-------- */
 
 /* --------------root route------------ */
-
 app.get("/", (req, res) => {
   console.log(req.method);
   res.json({ message: "Success", data: "Server is running" });
 });
 /* --------------root route end------------ */
 
-/* ------------Database Connection---------- */
+/* ------------Database---------- */
+
+/* ------------Database connect---------- */
 const uri = `mongodb+srv://${process.env.DB_user}:${process.env.DB_password}@cluster0.mj0nqa8.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
@@ -33,7 +34,31 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+/* ------------Database connect end---------- */
 
+/* ------------Database Operation---------- */
+const run = async () => {
+  try {
+    /* ------------Create database with collection---------- */
+    const serviceCollection = client
+      .db("ucritique-reviews")
+      .collection("services");
+
+    /* ------------Add a service---------- */
+    app.post("/service", async (req, res) => {
+      const service = req.body;
+      const result = await serviceCollection.insertOne(service);
+
+      res.json({ message: "success", result });
+    });
+  } catch {}
+};
+
+run().catch(console.dir);
+/* ------------Database Operation end---------- */
+/* ------------Database---------- */
+
+/* ------------Server ---------- */
 app.listen(port, () => {
   client.connect((err) => {
     if (err) {
