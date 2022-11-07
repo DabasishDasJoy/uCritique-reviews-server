@@ -75,6 +75,12 @@ const run = async () => {
 
     /* ------------Add a service---------- */
     app.post("/service", verifyJWT, async (req, res) => {
+      //further email verification
+      if (req.decoded.email !== req.query.email) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+
+      //Let user create service if user is verified
       const service = req.body;
       const result = await serviceCollection.insertOne(service);
 

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-  const authHeader = req.headers.Authorization;
+  const authHeader = req.headers.authorization;
 
   /* verify if token exist */
   if (!authHeader) {
@@ -11,9 +11,9 @@ module.exports = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   /* If token exist then verify if the token is valid */
-  jwt.verify(token, process.env.JWT_token, function (err, decoded) {
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
     if (err) {
-      return res.status(403).json({ message: "Access forbidden" });
+      return res.status(403).json({ message: "Unauthorized access" });
     }
 
     /* Set decoded info to request header for further verification */
