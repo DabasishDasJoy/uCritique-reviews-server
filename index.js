@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const jwt = require("jsonwebtoken");
+const verifyJWT = require("./middleware/verifyJWT");
 
 const port = process.env.PORT || 5000;
 
@@ -73,7 +74,7 @@ const run = async () => {
       .collection("services");
 
     /* ------------Add a service---------- */
-    app.post("/service", async (req, res) => {
+    app.post("/service", verifyJWT, async (req, res) => {
       const service = req.body;
       const result = await serviceCollection.insertOne(service);
 
