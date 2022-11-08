@@ -68,12 +68,17 @@ const client = new MongoClient(uri, {
 /* ------------Database Operation---------- */
 const run = async () => {
   try {
-    /* ------------Create database with collection---------- */
+    /* ------------Create service database with service collection---------- */
     const serviceCollection = client
       .db("ucritique-reviews")
       .collection("services");
 
-    /* ------------Add a service---------- */
+    /* ------Review Collection--------- */
+    const reviewCollection = client
+      .db("ucritique-reviews")
+      .collection("reviews");
+    /* ------------------------------Services----------------------------------- */
+    /* ------------Add a service (private)---------- */
     app.post("/service", verifyJWT, async (req, res) => {
       //further email verification
       if (req.decoded.email !== req.query.email) {
@@ -117,6 +122,36 @@ const run = async () => {
       res.json({ message: "success", result });
     });
     /* -----------Get a service end---------- */
+    /* ------------------------------Services end----------------------------------- */
+
+    /* ------------------------------Reviews----------------------------------- */
+    /* ------Add review by specific service (private)---------- */
+    app.post("/reviews", verifyJWT, async (req, res) => {
+      //further email verification
+      if (req.decoded.email !== req.query.email) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+
+      //Let user add a review if user is verified
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+
+      res.json({ message: "success", result });
+    });
+    /* ------Add review by specific service (private) end---------- */
+
+    /* ------Get reviews by specific service ---------- */
+    app.get("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      //Filter reviews by service id
+      const query = { serviceId: ObjectId(id) };
+
+      const result = await reviewCollection.findOne(query);
+
+      res.json({ message: "success", result });
+    });
+    /* ------Get reviews by specific service (private) end---------- */
+    /* ------------------------------Reviews end----------------------------------- */
   } catch {}
 };
 
