@@ -1,7 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const {
+  MongoClient,
+  ServerApiVersion,
+  ObjectId,
+  ObjectID,
+} = require("mongodb");
 const jwt = require("jsonwebtoken");
 const verifyJWT = require("./middleware/verifyJWT");
 
@@ -173,7 +178,7 @@ const run = async () => {
     /* ------Delete a review (protected) ---------- */
     app.delete("/reviews/:id", verifyJWT, async (req, res) => {
       if (req.query.email !== req.decoded.email) {
-        return res.json({ message: "Unauthorized access" });
+        return res.status(401).json({ message: "Unauthorized access" });
       }
 
       const query = { _id: ObjectId(req.params.id) };
@@ -184,6 +189,26 @@ const run = async () => {
     });
     /* ------Delete a review (protected) ---------- */
 
+    /* ------Update a review (protected) ---------- */
+    app.patch("/reviews/:id", verifyJWT, async (req, res) => {
+      if (req.query.email !== req.decoded.email) {
+        res.status(401).json({ message: "Unauthorized access" });
+      }
+      const filter = { _id: ObjectId(req.params.id) };
+
+      const { review, rating } = req.body;
+      const updateDoc = {
+        $set: {
+          review: review,
+          rating: rating,
+        },
+      };
+
+      const result = await reviewCollection.updateOne(filter, updateDoc);
+
+      res.status(401).json({ message: "success", result });
+    });
+    /* ------Update a review (protected) end---------- */
     /* ------------------------------Reviews end----------------------------------- */
   } finally {
   }
