@@ -144,9 +144,10 @@ const run = async () => {
     app.get("/reviews/:id", async (req, res) => {
       const id = req.params.id;
       //Filter reviews by service id
-      const query = { serviceId: ObjectId(id) };
+      const query = { serviceId: id };
 
-      const result = await reviewCollection.findOne(query);
+      const cursor = reviewCollection.find(query);
+      const result = await cursor.toArray();
 
       res.json({ message: "success", result });
     });
