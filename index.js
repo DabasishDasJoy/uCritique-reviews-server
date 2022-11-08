@@ -151,7 +151,25 @@ const run = async () => {
 
       res.json({ message: "success", result });
     });
-    /* ------Get reviews by specific service (private) end---------- */
+    /* ------Get reviews by specific service end---------- */
+
+    /* ------Get reviews by specific user (private)---------- */
+    app.get("/reviews", verifyJWT, async (req, res) => {
+      //email verification
+      if (req.decoded.email !== req.query.email) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+
+      //Filter reviews by service id
+      const query = { author_email: req.query.email };
+
+      const cursor = reviewCollection.find(query);
+      const result = await cursor.toArray();
+
+      res.json({ message: "success", result });
+    });
+    /* ------Get reviews by specific user end---------- */
+
     /* ------------------------------Reviews end----------------------------------- */
   } catch {}
 };
