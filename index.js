@@ -154,7 +154,7 @@ const run = async () => {
     /* ------Get reviews by specific service end---------- */
 
     /* ------Get reviews by specific user (private)---------- */
-    app.get("/reviews", verifyJWT, async (req, res) => {
+    app.get("/myreviews", verifyJWT, async (req, res) => {
       //email verification
       if (req.decoded.email !== req.query.email) {
         return res.status(401).json({ message: "Unauthorized access" });
@@ -170,8 +170,23 @@ const run = async () => {
     });
     /* ------Get reviews by specific user end---------- */
 
+    /* ------Delete a review (protected) ---------- */
+    app.delete("/reviews/:id", verifyJWT, async (req, res) => {
+      if (req.query.email !== req.decoded.email) {
+        return res.json({ message: "Unauthorized access" });
+      }
+
+      const query = { _id: ObjectId(req.params.id) };
+
+      const result = await reviewCollection.deleteOne(query);
+
+      res.json({ message: "success", result });
+    });
+    /* ------Delete a review (protected) ---------- */
+
     /* ------------------------------Reviews end----------------------------------- */
-  } catch {}
+  } finally {
+  }
 };
 
 run().catch(console.dir);
