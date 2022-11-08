@@ -139,11 +139,11 @@ const run = async () => {
 
       //Let user add a review if user is verified
       const review = req.body;
-      const doc = {
+      const reviewDoc = {
         ...review,
         dateAdded: new Date(),
       };
-      const result = await reviewCollection.insertOne(doc);
+      const result = await reviewCollection.insertOne(reviewDoc);
 
       res.json({ message: "success", result });
     });
