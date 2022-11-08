@@ -40,7 +40,7 @@ app.post("/jwt", (req, res) => {
   const user = req.body;
   const token = jwt.sign(user, cryptoToken, { expiresIn: "1d" });
 
-  res.json({ token: token });
+  res.json({ message: "success", token: token });
 });
 /* ------------Generate JSON web token end---------- */
 /* 
