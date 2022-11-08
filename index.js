@@ -150,8 +150,11 @@ const run = async () => {
       const id = req.params.id;
       //Filter reviews by service id
       const query = { serviceId: id };
+      const options = {
+        sort: { date: -1 },
+      };
+      const cursor = reviewCollection.find(query, options);
 
-      const cursor = reviewCollection.find(query);
       const result = await cursor.toArray();
 
       res.json({ message: "success", result });
