@@ -139,7 +139,11 @@ const run = async () => {
 
       //Let user add a review if user is verified
       const review = req.body;
-      const result = await reviewCollection.insertOne(review);
+      const doc = {
+        ...review,
+        dateAdded: new Date(),
+      };
+      const result = await reviewCollection.insertOne(doc);
 
       res.json({ message: "success", result });
     });
@@ -151,7 +155,7 @@ const run = async () => {
       //Filter reviews by service id
       const query = { serviceId: id };
       const options = {
-        sort: { date: -1 },
+        sort: { dateAdded: -1 },
       };
       const cursor = reviewCollection.find(query, options);
 
