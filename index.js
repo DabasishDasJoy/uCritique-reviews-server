@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const verifyJWT = require("./middleware/verifyJWT");
 
@@ -89,7 +89,6 @@ const run = async () => {
     /* ------------Add a service end---------- */
 
     /* -----------Get all the services---------- */
-
     app.get("/services", async (req, res) => {
       const size = parseInt(req.query.size);
       const page = parseInt(req.query.page);
@@ -107,6 +106,17 @@ const run = async () => {
       res.json({ dataCount, result });
     });
     /* -----------Get all the services end---------- */
+
+    /* -----------Get a service---------- */
+    app.get("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+
+      const result = await serviceCollection.findOne(query);
+
+      res.json({ message: "success", result });
+    });
+    /* -----------Get a service end---------- */
   } catch {}
 };
 
