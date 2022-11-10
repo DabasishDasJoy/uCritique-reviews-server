@@ -112,6 +112,18 @@ const run = async () => {
     });
     /* -----------Get all the services end---------- */
 
+    /* -----------Get three services only ---------- */
+    app.get("/homeServices", async (req, res) => {
+      const query = {};
+      const cursor = serviceCollection.find(query);
+
+      //pagination if query exist
+      const result = await cursor.limit(3).toArray();
+
+      res.json({ result });
+    });
+    /* -----------Get all the services end---------- */
+
     /* -----------Get a service---------- */
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
@@ -147,6 +159,7 @@ const run = async () => {
     /* ------Get reviews by specific service ---------- */
     app.get("/reviews/:id", async (req, res) => {
       const id = req.params.id;
+
       //Filter reviews by service id
       const query = { serviceId: id };
       const options = {
@@ -155,6 +168,23 @@ const run = async () => {
       const cursor = reviewCollection.find(query, options);
 
       const result = await cursor.toArray();
+
+      res.json({ message: "success", result });
+    });
+    /* ------Get reviews by specific service end---------- */
+
+    /* ------Get  a single review by id ---------- */
+    app.get("/review/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+
+      if (req.decoded.email !== req.query.email) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+
+      //Filter reviews by service id
+      const query = { _id: ObjectId(id) };
+
+      const result = await reviewCollection.findOne(query);
 
       res.json({ message: "success", result });
     });
@@ -198,17 +228,18 @@ const run = async () => {
       }
       const filter = { _id: ObjectId(req.params.id) };
 
-      const { review, rating } = req.body;
+      const { review, ratings } = req.body;
+
       const updateDoc = {
         $set: {
           review: review,
-          rating: rating,
+          ratings: ratings,
         },
       };
 
       const result = await reviewCollection.updateOne(filter, updateDoc);
 
-      res.status(401).json({ message: "success", result });
+      res.json({ message: "success", result });
     });
     /* ------Update a review (protected) end---------- */
     /* ------------------------------Reviews end----------------------------------- */
